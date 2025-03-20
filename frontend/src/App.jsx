@@ -2,42 +2,79 @@
 import { useEffect, useState } from 'react';
 import './App.css';
 
-const API_URL = 'COLOQUE_AQUI_A_URL_DO_BACKEND';
+const API_URL = 'http://localhost:3000';
 
 function App() {
-  const [flowers, setFlowers] = useState([]);
-  const [newFlower, setNewFlower] = useState({ name: '', species: '', color: '', description: '' });
+  const [flores, setFlores] = useState([]);
+  const [novaFlor, setNovaFlor] = useState({ nome: '', especie: '', cor: '', descricao: '' });
+  const [erro, setErro] = useState('');
+  const [mensagem, setMensagem] = useState('');
 
   useEffect(() => {
-    fetch(`${API_URL}/flowers`)
+    fetch(`${API_URL}/flores`)
       .then((res) => res.json())
-      .then(setFlowers);
+      .then(setFlores)
+      .catch((error) => console.error("Erro ao carregar flores:", error));
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await fetch(`${API_URL}/flowers`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(newFlower),
-    });
-    setNewFlower({ name: '', species: '', color: '', description: '' });
-    window.location.reload();
+    
+    try {
+      const res = await fetch(`${API_URL}/flores`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(novaFlor),
+      });
+
+      if (!res.ok) throw new Error('Falha ao adicionar a flor');
+      
+      const data = await res.json();
+      setFlores((prevFlores) => [...prevFlores, ...data]);
+      setMensagem('Flor adicionada com sucesso!');
+      setNovaFlor({ nome: '', especie: '', cor: '', descricao: '' });
+      setErro('');
+    } catch (error) {
+      setErro(error.message);
+      setMensagem('');
+    }
   };
 
   return (
     <div className="container">
       <h1>🌸 Catálogo de Flores</h1>
       <form onSubmit={handleSubmit}>
-        <input placeholder="Nome" value={newFlower.name} onChange={(e) => setNewFlower({ ...newFlower, name: e.target.value })} />
-        <input placeholder="Espécie" value={newFlower.species} onChange={(e) => setNewFlower({ ...newFlower, species: e.target.value })} />
-        <input placeholder="Cor" value={newFlower.color} onChange={(e) => setNewFlower({ ...newFlower, color: e.target.value })} />
-        <textarea placeholder="Descrição" value={newFlower.description} onChange={(e) => setNewFlower({ ...newFlower, description: e.target.value })} />
+        <input
+          placeholder="Nome"
+          value={novaFlor.nome}
+          onChange={(e) => setNovaFlor({ ...novaFlor, nome: e.target.value })}
+        />
+        <input
+          placeholder="Espécie"
+          value={novaFlor.especie}
+          onChange={(e) => setNovaFlor({ ...novaFlor, especie: e.target.value })}
+        />
+        <input
+          placeholder="Cor"
+          value={novaFlor.cor}
+          onChange={(e) => setNovaFlor({ ...novaFlor, cor: e.target.value })}
+        />
+        <textarea
+          placeholder="Descrição"
+          value={novaFlor.descricao}
+          onChange={(e) => setNovaFlor({ ...novaFlor, descricao: e.target.value })}
+        />
         <button type="submit">Adicionar</button>
       </form>
+
+      {mensagem && <div className="success-message">{mensagem}</div>}
+      {erro && <div className="error-message">{erro}</div>}
+
       <ul>
-        {flowers.map((flower) => (
-          <li key={flower.id}>{flower.name} - {flower.species} ({flower.color})</li>
+        {flores.map((flor) => (
+          <li key={flor.id}>
+            {flor.nome} - {flor.especie} ({flor.cor})
+          </li>
         ))}
       </ul>
     </div>
