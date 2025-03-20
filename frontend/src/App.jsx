@@ -3,6 +3,8 @@ import './App.css';
 
 // URL do backend (corrigida)
 const API_URL = 'https://catalogo-flores-dm58477oj-guilhermes-projects-48ef2b25.vercel.app';
+// Coloque seu token aqui, caso seja necessário para autenticação
+const TOKEN = 'seuTokenAqui'; // Substitua com o token correto
 
 function App() {
   const [flores, setFlores] = useState([]);
@@ -14,7 +16,13 @@ function App() {
   useEffect(() => {
     const carregarFlores = async () => {
       try {
-        const resposta = await fetch(`${API_URL}/flores`);
+        const resposta = await fetch(`${API_URL}/flores`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${TOKEN}`, // Envia o token de autenticação
+          },
+        });
         if (!resposta.ok) throw new Error('Erro ao carregar flores');
         const dados = await resposta.json();
         setFlores(dados);
@@ -33,7 +41,10 @@ function App() {
     try {
       const res = await fetch(`${API_URL}/flores`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${TOKEN}`, // Envia o token de autenticação
+        },
         body: JSON.stringify(novaFlor),
       });
 
