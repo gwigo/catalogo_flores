@@ -1,8 +1,7 @@
-// frontend/src/App.jsx
 import { useEffect, useState } from 'react';
 import './App.css';
 
-const API_URL = 'http://localhost:3000';
+const API_URL = 'https://catalogo-flores-dm58477oj-guilhermes-projects-48ef2b25.vercel.app'; // Corrigido
 
 function App() {
   const [flores, setFlores] = useState([]);
