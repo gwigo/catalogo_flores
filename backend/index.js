@@ -7,14 +7,17 @@ import { createClient } from '@supabase/supabase-js';
 
 const app = express();
 app.use(cors({
-  origin: '*', // Permite qualquer origem (pode ser alterado para um domínio específico)
-  methods: ['GET', 'POST'], // Especifica os métodos permitidos
-  allowedHeaders: ['Content-Type'], // Permite headers necessários
+  origin: '*', // Para testes, permite qualquer origem. Em produção, defina o domínio do frontend.
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type'],
 }));
-
 app.use(express.json());
 
 // Configurar Supabase
+if (!process.env.SUPABASE_URL || !process.env.SUPABASE_KEY) {
+  console.error("Erro: SUPABASE_URL ou SUPABASE_KEY não estão definidas no .env");
+  process.exit(1);
+}
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
 // Rota raiz

@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import './App.css';
 
-const API_URL = 'https://catalogo-flores-dm58477oj-guilhermes-projects-48ef2b25.vercel.app'; // Corrigido
+// URL do backend (corrigida)
+const API_URL = 'https://catalogo-flores-dm58477oj-guilhermes-projects-48ef2b25.vercel.app';
 
 function App() {
   const [flores, setFlores] = useState([]);
@@ -9,13 +10,23 @@ function App() {
   const [erro, setErro] = useState('');
   const [mensagem, setMensagem] = useState('');
 
+  // Carregar flores da API
   useEffect(() => {
-    fetch(`${API_URL}/flores`)
-      .then((res) => res.json())
-      .then(setFlores)
-      .catch((error) => console.error("Erro ao carregar flores:", error));
+    const carregarFlores = async () => {
+      try {
+        const resposta = await fetch(`${API_URL}/flores`);
+        if (!resposta.ok) throw new Error('Erro ao carregar flores');
+        const dados = await resposta.json();
+        setFlores(dados);
+      } catch (error) {
+        setErro('Erro ao carregar flores');
+        console.error(error);
+      }
+    };
+    carregarFlores();
   }, []);
 
+  // Adicionar flor
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -42,6 +53,7 @@ function App() {
   return (
     <div className="container">
       <h1>🌸 Catálogo de Flores</h1>
+
       <form onSubmit={handleSubmit}>
         <input
           placeholder="Nome"
