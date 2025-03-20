@@ -6,7 +6,12 @@ import cors from 'cors';
 import { createClient } from '@supabase/supabase-js';
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: '*', // Permite qualquer origem (pode ser alterado para um domínio específico)
+  methods: ['GET', 'POST'], // Especifica os métodos permitidos
+  allowedHeaders: ['Content-Type'], // Permite headers necessários
+}));
+
 app.use(express.json());
 
 // Configurar Supabase
